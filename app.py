@@ -19,14 +19,12 @@ from linebot.v3.messaging import (
     ShowLoadingAnimationRequest
 )
 from openai import OpenAI
-import anthropic
 import os
 
 app = Flask(__name__)
 
 CHANNEL_ACCESS_TOKEN = os.getenv("CHANNEL_ACCESS_TOKEN")
 CHANNEL_SECRET = os.getenv("CHANNEL_SECRET")
-Claude_API_KEY = os.getenv("API_KEY")
 GPT_API_KEY = os.getenv("GPT_API_KEY")
     
 line_handler = WebhookHandler(CHANNEL_SECRET)
@@ -58,6 +56,7 @@ def handle_messsage(event):
     
 @line_handler.add(FollowEvent)
 def handle_follow(event):
+    play_animation(event)
     messages = [TextMessage(text="歡迎加入我的AI-LINE-BOT，您可以詢問我任何問題，我會盡力回答您！")]
     reply_message(event, messages)
     
@@ -77,9 +76,13 @@ def reply_GPT_message(event):
     user_message = event.message.text
     
     completion = client.chat.completions.create(
-        # model="gpt-4o-mini-2024-07-18",
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini-2024-07-18",
+        # model="gpt-3.5-turbo",
         messages=[
+            {
+                "role": "system",
+                "content": "你是一個來自台灣的AI機器人，需要回答我的問題請使用繁體中文。"
+            },
             {
                 "role": "user",
                 "content": user_message
@@ -89,9 +92,6 @@ def reply_GPT_message(event):
         temperature=0.2
     )
     return completion.choices[0].message.content
-    
-def reply_Claude_message(event):        
-        client = anthropic.Anthropic( api_key = Claude_API_KEY)
         
 def play_animation(event):
     with ApiClient(configuration) as api_client:
