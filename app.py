@@ -26,7 +26,7 @@ app = Flask(__name__)
 CHANNEL_ACCESS_TOKEN = os.getenv("CHANNEL_ACCESS_TOKEN")
 CHANNEL_SECRET = os.getenv("CHANNEL_SECRET")
 GPT_API_KEY = os.getenv("GPT_API_KEY")
-    
+
 line_handler = WebhookHandler(CHANNEL_SECRET)
 
 configuration = Configuration(
@@ -70,13 +70,15 @@ def reply_message(event, messages):
             )
         )
 
+from openai import OpenAI
+
 def reply_GPT_message(event):
     play_animation(event)
-    client = OpenAI(GPT_API_KEY)
+    client = OpenAI(api_key=GPT_API_KEY)
     user_message = event.message.text
 
-    completion = client.completions.create(
-        model="gpt-4o-mini-2024-07-18",
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",  # 可以替換為其他聊天模型，例如 gpt-4
         messages=[
             {
                 "role": "system",
