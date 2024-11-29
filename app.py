@@ -52,13 +52,13 @@ def callback():
 def handle_messsage(event):
     messages = [TextMessage(text=reply_GPT_message(event))]
     # messages = [TextMessage(text=event.message.text)]
-    reply_message(event, messages)
+    return reply_message(event, messages)
     
 @line_handler.add(FollowEvent)
 def handle_follow(event):
     play_animation(event)
     messages = [TextMessage(text="歡迎加入我的AI-LINE-BOT，您可以詢問我任何問題，我會盡力回答您！")]
-    reply_message(event, messages)
+    return reply_message(event, messages)
     
 def reply_message(event, messages):
     with ApiClient(configuration) as api_client:
@@ -70,14 +70,15 @@ def reply_message(event, messages):
             )
         )
         
+import openai
+
 def reply_GPT_message(event):
     play_animation(event)
-    client = OpenAI(api_key=GPT_API_KEY)
+    openai.api_key = GPT_API_KEY
     user_message = event.message.text
-    
-    completion = client.chat.completions.create(
+
+    completion = openai.ChatCompletion.create(
         model="gpt-4o-mini-2024-07-18",
-        # model="gpt-3.5-turbo",
         messages=[
             {
                 "role": "system",
