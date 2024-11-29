@@ -69,15 +69,13 @@ def reply_message(event, messages):
                 messages=messages
             )
         )
-        
-import openai
 
 def reply_GPT_message(event):
     play_animation(event)
-    openai.api_key = GPT_API_KEY
+    client = OpenAI(GPT_API_KEY)
     user_message = event.message.text
 
-    completion = openai.ChatCompletion.create(
+    completion = client.completions.create(
         model="gpt-4o-mini-2024-07-18",
         messages=[
             {
